@@ -3,6 +3,7 @@ module source.scans;
 import core.thread;
 import std.stdio, std.socket;
 
+// TODO: Catch invalid host exception
 class Scans
 {
 public:
@@ -35,18 +36,17 @@ public:
                 if(verbose)
                     writefln("Attempting port %d...", ranges[i]);
                 client.connect(addr[0]);
-                Thread.sleep(dur!("seconds")(1));
             }
             catch(Exception e)
             {
                 if(verbose)
-                    writefln("Port %d is closed.", ranges[i]);
+                    writefln("Port %d is closed.\n", ranges[i]);
 
                 client.close();
                 continue;
             }
 
-            writefln("Port %d is open!", ranges[i]);
+            writefln("\t***Port %d is open!***\n", ranges[i]);
             client.close();
             destroy(client);
         }
@@ -75,15 +75,17 @@ public:
                 if(verbose)
                     writefln("Attempting port %d...", ranges[i]);
                 client.connect(addr[0]);
-                Thread.sleep(dur!("seconds")(1));
             }
             catch(Exception e)
             {
                 if(verbose)
-                    writefln("Port %d is closed.", ranges[i]);
+                    writefln("Port %d is closed.\n", ranges[i]);
+
+                client.close();
+                continue;
             }
 
-            writefln("Port %d is open!", ranges[i]);
+            writefln("\t***Port %d is open!***\n", ranges[i]);
             client.close();
             destroy(client); 
         }

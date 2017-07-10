@@ -82,6 +82,7 @@ public:
     void scan()
     {
         processFlags();
+        printInfo();
         performScan();
     }
 
@@ -93,6 +94,17 @@ private:
     ushort[] customPortRange;
     ushort DEFAULT_PORT_RANGE = 1023;
 
+    /// Prints the info before scan
+    void printInfo()
+    {
+        if(Flags.SinglePort)
+            writefln("Initialising port scan on %s...\nScanning port %d...\n", this.target, this.customPortRange[0]);
+        else if(Flags.PRange)
+            writefln("Initialising port scan on %s...\nScanning ports %d to %d...\n", this.target, this.customPortRange[0], this.customPortRange[this.customPortRange.length-1]);
+        else
+            writefln("Initialising port scan on %s...\nScanning ports %d to %d...\n", this.target, this.defaultPorts[0], this.defaultPorts[this.defaultPorts.length-1]);
+    }
+
     /// Sets the default port ranges to scan.
     void setDefaultPortRange()
     {
@@ -101,14 +113,15 @@ private:
             this.defaultPorts[i-1] = i;
     }
 
+
     /// Sets the custom port range 
     void setCustomPortRange(ushort min, ushort max)
     {
         ushort range = cast(ushort)(max - min);
-        this.customPortRange = new ushort[range];
+        this.customPortRange = new ushort[range+1];
 
         int count;
-        for(ushort i = min; i < max; i++)
+        for(ushort i = min; i <= max; i++)
         {
             this.customPortRange[count] = i;
             count++;
@@ -160,6 +173,7 @@ private:
     }
 
     /// Performs a scan
+    // TODO: Find out what combos are missing...
     void performScan()
     {
         Scans scan = new Scans(this.target);
@@ -172,8 +186,9 @@ private:
         }
 
         // Defaualt TCP San Verbose only
-        if(Flags.Verbose && !(Flags.UDP && Flags.TCP && Flags.PRange && Flags.SinglePort))
+        if(Flags.Verbose && !(Flags.UDP) && !(Flags.TCP) && !(Flags.PRange) && !(Flags.SinglePort))
         {
+            writeln("HEre!!!");
             defaultScan(scan);
             return;
         }
@@ -243,12 +258,6 @@ private:
         }
 
         writefln("Error initialising scan");
-        writeln(Flags.Verbose);
-        writeln(Flags.NoFlags);
-        writeln(Flags.TCP);
-        writeln(Flags.UDP);
-        writeln(Flags.PRange);
-        writeln(Flags.SinglePort);
     }
 
     /// Default Scan
