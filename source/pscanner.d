@@ -91,6 +91,8 @@ private:
                     break;
 
                 default:
+                    if(this.scanFlags[i-1] == "-p")
+                        break;
                     writefln("Unrecognized flag: \"%s\"\nExiting.", this.scanFlags[i]);
                     exit(-1);
                     break;
