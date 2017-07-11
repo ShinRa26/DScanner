@@ -1,2 +1,2 @@
 # DScanner
-Port Scanner in D
+Basic TCP/UDP Port Scanner in D Language

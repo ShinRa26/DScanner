@@ -3,7 +3,11 @@ module source.scans;
 import core.thread;
 import std.stdio, std.socket;
 
-// TODO: Catch invalid host exception
+/***
+Class for conducting TCP/UDP scans of the target.
+A target is supplied and will perform a TCP and/or UDP scan for the port ranges supplied.
+Each scan takes a range of ports to scan and a flag for verbose output.
+*/
 class Scans
 {
 public:
@@ -19,73 +23,76 @@ public:
         for(int i; i < ranges.length; i++)
         {
             Socket client;
+            Address[] addr;
 
             try
             {
                 client = new Socket(AddressFamily.INET, SocketType.STREAM, ProtocolType.TCP);
+                addr = getAddress(this.target, ranges[i]);
             }
             catch(SocketOSException e)
             {
                 writefln("Error creating socket!\n%s", e);
                 return;
             }
-            auto addr = getAddress(this.target, ranges[i]);
 
             try
             {
                 if(verbose)
-                    writefln("Attempting port %d...", ranges[i]);
+                    writefln("Attempting connection on port %d/TCP...", ranges[i]);
                 client.connect(addr[0]);
             }
             catch(Exception e)
             {
                 if(verbose)
-                    writefln("Port %d is closed.\n", ranges[i]);
+                    writefln("Port %d/TCP is closed.\n", ranges[i]);
 
                 client.close();
                 continue;
             }
 
-            writefln("\t***Port %d is open!***\n", ranges[i]);
+            writefln("Discovered open port %d/TCP!\n", ranges[i]);
             client.close();
             destroy(client);
         }
     }
 
-    /// UDP Scan - FUCK THE DRY PRINCIPLE
+    /// UDP Scan - Does not work on Linux! (Need to fix - Protocol not supported)
+    /// Pretty much a TCP scan but with the UDP flag set in the socket instead of TCP...
     void UDPScan(ushort[] ranges, bool verbose)
     {
         for(int i; i < ranges.length; i++)
         {
             Socket client;
+            Address[] addr;
 
             try
             {
                 client = new Socket(AddressFamily.INET, SocketType.STREAM, ProtocolType.UDP);
+                addr = getAddress(this.target, ranges[i]);
             }
             catch(SocketOSException e)
             {
                 writefln("Error creating socket!\n%s", e);
                 return;
             }
-            auto addr = getAddress(this.target, ranges[i]);
 
             try
             {
                 if(verbose)
-                    writefln("Attempting port %d...", ranges[i]);
+                    writefln("Attempting connection on port %d/UDP...", ranges[i]);
                 client.connect(addr[0]);
             }
             catch(Exception e)
             {
                 if(verbose)
-                    writefln("Port %d is closed.\n", ranges[i]);
+                    writefln("Port %d/UDP is closed.\n", ranges[i]);
 
                 client.close();
                 continue;
             }
 
-            writefln("\t***Port %d is open!***\n", ranges[i]);
+            writefln("Discovered open port %d/UDP!\n", ranges[i]);
             client.close();
             destroy(client); 
         }

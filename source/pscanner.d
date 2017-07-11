@@ -82,7 +82,8 @@ public:
     void scan()
     {
         processFlags();
-        printInfo();
+        if(Flags.Verbose)
+            printInfo();
         performScan();
     }
 
@@ -260,7 +261,9 @@ private:
         writefln("Error initialising scan");
     }
 
-    /// Default Scan
+    /******* WRAPPERS ********/
+
+    /// Default Scan (TCP)
     void defaultScan(Scans s)
     {
         if(Flags.Verbose)
