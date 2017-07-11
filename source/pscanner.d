@@ -1,7 +1,7 @@
 module source.pscanner;
 
 import core.thread;
-import std.string, std.stdio, std.socket;
+import core.stdc.stdlib, std.string, std.stdio, std.socket;
 
 import source.scans;
 
@@ -40,6 +40,24 @@ public:
     }
     ~this(){}
 
+
+    /// Public wrapper for scanning
+    void scan()
+    {
+        processFlags();
+        if(Flags.Verbose)
+            printInfo();
+        performScan();
+    }
+
+private:
+    PFlags Flags;
+    string target;
+    string[] scanFlags;
+    ushort[] defaultPorts;
+    ushort[] customPortRange;
+    ushort DEFAULT_PORT_RANGE = 1023;
+
     /// Processes the arguments and sets the approriate flags
     void processFlags()
     {
@@ -73,27 +91,12 @@ public:
                     break;
 
                 default:
+                    writefln("Unrecognized flag: \"%s\"\nExiting.", this.scanFlags[i]);
+                    exit(-1);
                     break;
             }
         }
     }
-
-    /// Public wrapper for scanning
-    void scan()
-    {
-        processFlags();
-        if(Flags.Verbose)
-            printInfo();
-        performScan();
-    }
-
-private:
-    PFlags Flags;
-    string target;
-    string[] scanFlags;
-    ushort[] defaultPorts;
-    ushort[] customPortRange;
-    ushort DEFAULT_PORT_RANGE = 1023;
 
     /// Prints the info before scan
     void printInfo()
@@ -115,7 +118,7 @@ private:
     }
 
 
-    /// Sets the custom port range 
+    /// Sets the custom port range to scan
     void setCustomPortRange(ushort min, ushort max)
     {
         ushort range = cast(ushort)(max - min);
@@ -139,7 +142,7 @@ private:
     /// Determines the port ranges from the parsed argument and sets appropriate flags
     void determinePortRange(string ports)
     {
-        import std.c.stdlib, std.conv;
+        import std.conv;
 
         auto split = ports.split("-");
         
@@ -174,6 +177,7 @@ private:
     }
 
     /// Performs a scan
+    /// Messy but it works... TODO: Refactor
     // TODO: Find out what combos are missing...
     void performScan()
     {
@@ -186,7 +190,7 @@ private:
             return;
         }
 
-        // Defaualt TCP San Verbose only
+        // Defaualt TCP Scan Verbose only
         if(Flags.Verbose && !(Flags.UDP) && !(Flags.TCP) && !(Flags.PRange) && !(Flags.SinglePort))
         {
             writeln("HEre!!!");

@@ -8,7 +8,7 @@ void main(string[] args)
 	auto cla = args[1..$];
 	if(cla.length == 0)
 	{
-		writeln("You must pass a target!\nExitting...");
+		writeln("You must pass a target!\nExiting...");
 		return;
 	}
 

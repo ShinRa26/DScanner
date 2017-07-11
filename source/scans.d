@@ -32,7 +32,7 @@ public:
             }
             catch(SocketOSException e)
             {
-                writefln("Error creating socket!\n%s", e);
+                writefln("Error creating socket!\nCheck host address is valid.");
                 return;
             }
 
@@ -68,12 +68,12 @@ public:
 
             try
             {
-                client = new Socket(AddressFamily.INET, SocketType.STREAM, ProtocolType.UDP);
+                client = new Socket(AddressFamily.INET, SocketType.DGRAM, ProtocolType.UDP);
                 addr = getAddress(this.target, ranges[i]);
             }
             catch(SocketOSException e)
             {
-                writefln("Error creating socket!\n%s", e);
+                writefln("Error creating socket!\nCheck the Host address is valid.");
                 return;
             }
 
